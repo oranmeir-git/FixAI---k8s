@@ -31,7 +31,16 @@ jobs:
       - name: Apply Kubernetes manifests
         run: |
           kubectl apply -f k8s/namespace.yaml
-          kubectl apply -f k8s/secrets.yaml
+          
+          # Create secret dynamically from GitHub Secrets
+          kubectl create secret generic fixai-secrets \
+            --namespace=fixai \
+            --from-literal=MYSQL_ROOT_PASSWORD='${{ secrets.MYSQL_ROOT_PASSWORD }}' \
+            --from-literal=MYSQL_USER='${{ secrets.MYSQL_USER }}' \
+            --from-literal=MYSQL_PASSWORD='${{ secrets.MYSQL_PASSWORD }}' \
+            --from-literal=GEMINI_KEY='${{ secrets.GEMINI_KEY }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+
           kubectl apply -f k8s/configmaps/ --recursive
           kubectl apply -f k8s/mysql/
           kubectl apply -f k8s/flask-app/
