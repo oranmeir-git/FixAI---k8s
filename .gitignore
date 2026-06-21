@@ -13,5 +13,5 @@ mysql-data/
 vol/
 
 
-terraform/.terraform/
-terraform/*.tfstate*
+# Kubernetes secrets (real values should never be committed)
+k8s/secrets.yaml
